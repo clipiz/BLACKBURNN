@@ -1,0 +1,103 @@
+:root {
+  --bg: #000;
+  --panel: #0b0b0b;
+  --grid: #2b2b2b;
+  --text: #f2f2f2;
+  --yellow: #f2f200;
+  --header-gray: #bdbdbd;
+  --cell-gray: #d7d7d7;
+  --green: #137d4c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.topbar {
+  padding: 16px;
+  text-align: center;
+}
+
+.topbar h1 {
+  margin: 8px 0 0;
+  color: var(--yellow);
+  font-style: italic;
+}
+
+.back {
+  color: #9cc7ff;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.wrap {
+  padding: 10px 14px 28px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid #555;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid var(--grid);
+  padding: 8px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background: var(--header-gray);
+  color: #2d54aa;
+  font-weight: 700;
+}
+
+td {
+  background: var(--cell-gray);
+  color: #000;
+  font-weight: 700;
+}
+
+.section-row td {
+  background: #000;
+  color: var(--yellow);
+  font-style: italic;
+  font-size: 1.95rem;
+  border-left-color: #000;
+  border-right-color: #000;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 72px;
+  padding: 4px 10px;
+  color: #eaf6ea;
+}
+
+.badge.actif { background: var(--green); }
+.badge.indispo { background: #5c5c5c; }
+.badge.info { background: #b28b2d; color: #111; }
+
+.grade.commandant { background: #b40000; color: #fff; }
+.grade.adjudant { background: #b9d9a5; color: #184a1f; }
+.grade.caporalchef { background: #faefc6; color: #6d4d00; }
+.grade.caporal { background: #efc6a7; color: #8a3c00; }
+.grade.premiere { background: #f3c3c3; color: #971f1f; }
+.grade.seconde { background: #c7ddeb; color: #245370; }
+
+@media (max-width: 900px) {
+  .section-row td { font-size: 1.35rem; }
+}
