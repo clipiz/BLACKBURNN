@@ -6,10 +6,23 @@
   <title>BLACKBURN — Indicatif Radio</title>
   <meta name="description" content="Tableau des indicatifs radio BLACKBURN" />
   <link rel="stylesheet" href="indicatif-radio.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Verrou d'accès -->
+  <div id="accessGate" class="gate-overlay">
+    <div class="gate-box">
+      <h2>Accès sécurisé</h2>
+      <p>Entrez le code d'accès pour continuer</p>
+      <input id="accessCodeInput" type="password" inputmode="numeric" placeholder="Code d'accès" />
+      <button id="accessCodeBtn" class="btn">Entrer</button>
+      <p id="accessError" class="gate-error"></p>
+    </div>
+  </div>
+
   <header class="topbar">
     <a class="back" href="index.html">← Retour accueil</a>
+    <button id="logoutBtn" class="btn logout-btn" type="button">Se déconnecter</button>
     <h1>Frères D'armes - Blackburn - FRQ : 59</h1>
   </header>
 
@@ -33,80 +46,32 @@
         <tbody>
           <tr class="section-row"><td colspan="10">CHEF SECTION - Blackburn Leader</td></tr>
           <tr>
-            <td class="grade commandant">Commandant</td>
-            <td>Dunn Asselin</td>
-            <td>12/01/26</td>
-            <td>-</td>
-            <td><span class="badge actif">ACTIF</span></td>
-            <td>BRAVO LD</td>
-            <td>KEYSTONE</td>
-            <td>⭐⭐⭐</td>
-            <td>☑</td>
-            <td></td>
+            <td class="grade commandant">Commandant</td><td>Dunn Asselin</td><td>12/01/26</td><td>-</td>
+            <td><span class="badge actif">ACTIF</span></td><td>BRAVO LD</td><td>KEYSTONE</td><td>⭐⭐⭐</td><td>☑</td><td></td>
           </tr>
 
           <tr class="section-row"><td colspan="10">SOUS-CHEF SECTION</td></tr>
           <tr>
-            <td class="grade adjudant">Adjudant</td>
-            <td>Jean Pontault</td>
-            <td>26/02/2026</td>
-            <td>-</td>
-            <td><span class="badge actif">ACTIF</span></td>
-            <td>BRAVO 1</td>
-            <td>FOX</td>
-            <td>⭐⭐⭐</td>
-            <td>☑</td>
-            <td></td>
+            <td class="grade adjudant">Adjudant</td><td>Jean Pontault</td><td>26/02/2026</td><td>-</td>
+            <td><span class="badge actif">ACTIF</span></td><td>BRAVO 1</td><td>FOX</td><td>⭐⭐⭐</td><td>☑</td><td></td>
           </tr>
 
           <tr class="section-row"><td colspan="10">OPÉRATEURS CONFIRMÉS</td></tr>
           <tr>
-            <td class="grade caporalchef">Caporal-Chef</td>
-            <td>Gus March</td>
-            <td>02/04/2026</td>
-            <td>Pause</td>
-            <td><span class="badge indispo">INDISPO</span></td>
-            <td>BRAVO 2</td>
-            <td>VOLT</td>
-            <td>TEAM ?</td>
-            <td>☑</td>
-            <td></td>
+            <td class="grade caporalchef">Caporal-Chef</td><td>Gus March</td><td>02/04/2026</td><td>Pause</td>
+            <td><span class="badge indispo">INDISPO</span></td><td>BRAVO 2</td><td>VOLT</td><td>TEAM ?</td><td>☑</td><td></td>
           </tr>
           <tr>
-            <td class="grade caporal">Caporal</td>
-            <td>Quentin Dolores</td>
-            <td>04/04/2026</td>
-            <td>-</td>
-            <td><span class="badge info">INFO ?</span></td>
-            <td>BRAVO 3</td>
-            <td>ULTRON</td>
-            <td>TEAM 1 ⭐</td>
-            <td>☑</td>
-            <td></td>
+            <td class="grade caporal">Caporal</td><td>Quentin Dolores</td><td>04/04/2026</td><td>-</td>
+            <td><span class="badge info">INFO ?</span></td><td>BRAVO 3</td><td>ULTRON</td><td>TEAM 1 ⭐</td><td>☑</td><td></td>
           </tr>
           <tr>
-            <td class="grade premiere">1ere Classe</td>
-            <td>Noa LETRAILLER</td>
-            <td>25/04/2026</td>
-            <td>-</td>
-            <td><span class="badge actif">ACTIF</span></td>
-            <td>BRAVO 4</td>
-            <td>HAVOC</td>
-            <td>TEAM 2 ⭐</td>
-            <td>☑</td>
-            <td></td>
+            <td class="grade premiere">1ere Classe</td><td>Noa LETRAILLER</td><td>25/04/2026</td><td>-</td>
+            <td><span class="badge actif">ACTIF</span></td><td>BRAVO 4</td><td>HAVOC</td><td>TEAM 2 ⭐</td><td>☑</td><td></td>
           </tr>
           <tr>
-            <td class="grade seconde">2nd Classe</td>
-            <td>Alex Brissard</td>
-            <td>15/05/2026</td>
-            <td>-</td>
-            <td><span class="badge actif">ACTIF</span></td>
-            <td>BRAVO 5</td>
-            <td>CHARON</td>
-            <td>TEAM ?</td>
-            <td>☑</td>
-            <td></td>
+            <td class="grade seconde">2nd Classe</td><td>Alex Brissard</td><td>15/05/2026</td><td>-</td>
+            <td><span class="badge actif">ACTIF</span></td><td>BRAVO 5</td><td>CHARON</td><td>TEAM ?</td><td>☑</td><td></td>
           </tr>
 
           <tr class="section-row"><td colspan="10">OPÉRATEURS</td></tr>
@@ -122,5 +87,7 @@
       </table>
     </section>
   </main>
+
+  <script src="script.js"></script>
 </body>
 </html>

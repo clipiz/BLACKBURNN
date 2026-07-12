@@ -147,6 +147,58 @@ footer {
   padding: 30px 10px;
 }
 
+/* ====== ACCESS GATE ====== */
+body.locked {
+  overflow: hidden;
+}
+
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.gate-overlay.hidden {
+  display: none;
+}
+
+.gate-box {
+  width: min(420px, 100%);
+  background: #111712;
+  border: 1px solid #2d3a30;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.gate-box h2 {
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+.gate-box p {
+  margin-bottom: 12px;
+  color: #c5d0c5;
+}
+
+.gate-box input {
+  margin-bottom: 10px;
+}
+
+.gate-error {
+  margin-top: 10px;
+  color: #ff7b7b;
+  min-height: 20px;
+}
+
+.logout-btn {
+  margin-left: 10px;
+}
+
 @media (max-width: 768px) {
   .menu-btn { display: block; }
   nav {
