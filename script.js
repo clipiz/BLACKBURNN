@@ -39,9 +39,51 @@ function preloadSounds() {
 let soundEnabled = localStorage.getItem(SOUND_STORAGE_KEY) !== "false";
 let userInteractedWithPage = false;
 
+/** ====== MUSIQUE DE FOND ======
+ * Un unique fichier `assets/sounds/background.mp3` joué en boucle discrète.
+ * Démarre seulement après une interaction utilisateur (politique autoplay des navigateurs)
+ * et respecte le même interrupteur ON/OFF que les sons d'interaction.
+ */
+const BACKGROUND_MUSIC_SRC = "assets/sounds/background.mp3";
+const BACKGROUND_MUSIC_VOLUME = 0.15;
+let backgroundMusic;
+
+function getBackgroundMusic() {
+  if (backgroundMusic) return backgroundMusic;
+
+  backgroundMusic = new Audio(BACKGROUND_MUSIC_SRC);
+  backgroundMusic.preload = "auto";
+  backgroundMusic.loop = true;
+  backgroundMusic.volume = BACKGROUND_MUSIC_VOLUME;
+  backgroundMusic.addEventListener("error", () => {
+    console.warn(`[BLACKBURN] Fichier audio introuvable ou illisible: ${BACKGROUND_MUSIC_SRC}`);
+  });
+  return backgroundMusic;
+}
+
+function playBackgroundMusic() {
+  if (!soundEnabled) return;
+
+  const music = getBackgroundMusic();
+  if (!music.paused) return;
+
+  const playPromise = music.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(() => {});
+  }
+}
+
+function stopBackgroundMusic() {
+  if (!backgroundMusic) return;
+  backgroundMusic.pause();
+}
+
 function unlockSoundPlayback() {
   userInteractedWithPage = true;
-  if (soundEnabled) preloadSounds();
+  if (soundEnabled) {
+    preloadSounds();
+    playBackgroundMusic();
+  }
 }
 
 window.addEventListener("pointerdown", unlockSoundPlayback, { once: true, passive: true });
@@ -114,6 +156,9 @@ function setupSoundToggle() {
     if (soundEnabled) {
       preloadSounds();
       playSound("confirm");
+      if (userInteractedWithPage) playBackgroundMusic();
+    } else {
+      stopBackgroundMusic();
     }
   });
 
