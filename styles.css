@@ -43,7 +43,8 @@ nav a {
   color: var(--text);
   text-decoration: none;
   margin-left: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.08rem;
 }
 
 nav a:hover {
@@ -56,6 +57,7 @@ nav a:hover {
   border: none;
   color: var(--text);
   font-size: 1.4rem;
+  cursor: pointer;
 }
 
 .hero {
@@ -97,6 +99,10 @@ nav a:hover {
   margin: 0 auto;
 }
 
+.page-pad {
+  padding-top: 130px;
+}
+
 .section h2 {
   margin-bottom: 16px;
   font-size: 1.9rem;
@@ -130,6 +136,7 @@ nav a:hover {
   display: grid;
   gap: 12px;
   margin-top: 12px;
+  max-width: 460px;
 }
 
 input, textarea {
@@ -199,8 +206,20 @@ body.locked {
   margin-left: 10px;
 }
 
+@media (max-width: 980px) {
+  .navbar {
+    gap: 10px;
+  }
+
+  nav a {
+    margin-left: 10px;
+    font-size: 0.98rem;
+  }
+}
+
 @media (max-width: 768px) {
   .menu-btn { display: block; }
+
   nav {
     display: none;
     position: absolute;
@@ -210,10 +229,18 @@ body.locked {
     border: 1px solid #26332a;
     border-radius: 10px;
     padding: 10px;
+    min-width: 220px;
   }
+
   nav.open { display: block; }
+
   nav a {
     display: block;
     margin: 8px 0;
+  }
+
+  .logout-btn {
+    margin-left: auto;
+    padding: 8px 12px;
   }
 }
