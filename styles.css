@@ -322,6 +322,18 @@ body.locked {
   margin-left: 10px;
 }
 
+.sound-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 4500;
+  padding: 8px 12px;
+  font-size: 0.86rem;
+  letter-spacing: 0.6px;
+  border: 1px solid #2f4935;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+}
+
 /* ====== REVEAL ANIM ====== */
 .reveal-up {
   opacity: 0;
@@ -389,5 +401,11 @@ body.locked {
   .logo-img {
     width: 32px;
     height: 32px;
+  }
+
+  .sound-toggle {
+    right: 12px;
+    bottom: 12px;
+    font-size: 0.8rem;
   }
 }

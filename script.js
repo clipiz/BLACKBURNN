@@ -1,6 +1,94 @@
 const menuBtn = document.getElementById("menuBtn");
 const nav = document.getElementById("nav");
 
+/** ====== SONS D'INTERACTION ======
+ * Le système utilise des fichiers audio externes dans `assets/sounds/`.
+ * Remplacez simplement les fichiers (mêmes noms) pour personnaliser l'ambiance.
+ */
+const SOUND_STORAGE_KEY = "blackburn_sound_enabled";
+const INTERACTIVE_SOUND_SELECTOR =
+  "a[href], button, input[type='button'], input[type='submit'], input[type='reset'], [role='button']";
+
+const soundLibrary = {
+  hover: new Audio("assets/sounds/hover.mp3"),
+  click: new Audio("assets/sounds/click.mp3"),
+  confirm: new Audio("assets/sounds/confirm.mp3")
+};
+
+soundLibrary.hover.volume = 0.2;
+soundLibrary.click.volume = 0.35;
+soundLibrary.confirm.volume = 0.4;
+Object.values(soundLibrary).forEach((sound) => {
+  sound.preload = "auto";
+  sound.load();
+});
+
+let soundEnabled = localStorage.getItem(SOUND_STORAGE_KEY) !== "false";
+let userInteractedWithPage = false;
+
+function unlockSoundPlayback() {
+  userInteractedWithPage = true;
+}
+
+window.addEventListener("pointerdown", unlockSoundPlayback, { once: true, passive: true });
+window.addEventListener("keydown", unlockSoundPlayback, { once: true });
+
+/** Joue un son sans bloquer la page si le navigateur refuse la lecture. */
+function playSound(soundName) {
+  if (!soundEnabled || !userInteractedWithPage) return;
+
+  const source = soundLibrary[soundName];
+  if (!source) return;
+
+  // cloneNode évite les coupures quand plusieurs interactions arrivent rapidement.
+  const instance = source.cloneNode();
+  instance.volume = source.volume;
+  instance.currentTime = 0;
+  const playPromise = instance.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(() => {});
+  }
+}
+
+function bindInteractionSounds(root = document) {
+  root.querySelectorAll(INTERACTIVE_SOUND_SELECTOR).forEach((element) => {
+    if (element.dataset.soundBound === "true") return;
+
+    element.dataset.soundBound = "true";
+    element.addEventListener("mouseenter", () => playSound("hover"));
+    element.addEventListener("click", () => playSound("click"));
+  });
+}
+
+function setupSoundToggle() {
+  const toggleBtn = document.createElement("button");
+  toggleBtn.type = "button";
+  toggleBtn.className = "btn sound-toggle";
+  toggleBtn.id = "soundToggleBtn";
+
+  function updateSoundToggleUI() {
+    toggleBtn.textContent = soundEnabled ? "Sons: ON" : "Sons: OFF";
+    toggleBtn.setAttribute("aria-pressed", String(soundEnabled));
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem(SOUND_STORAGE_KEY, String(soundEnabled));
+    updateSoundToggleUI();
+
+    if (soundEnabled) {
+      playSound("confirm");
+    }
+  });
+
+  updateSoundToggleUI();
+  document.body.appendChild(toggleBtn);
+  bindInteractionSounds(document);
+}
+
+setupSoundToggle();
+bindInteractionSounds();
+
 if (menuBtn && nav) {
   menuBtn.addEventListener("click", () => {
     nav.classList.toggle("open");
