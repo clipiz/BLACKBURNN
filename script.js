@@ -11,6 +11,8 @@ const accessError = document.getElementById("accessError");
  */
 const UNIT_STATUS = "OPÉRATIF";
 const DISCORD_INVITE_URL = "https://discord.gg/U8Xu5EEEsD";
+const WARNING_STATUS_KEYWORDS = ["alerte", "maintenance", "veille"];
+const CRITICAL_STATUS_KEYWORDS = ["hors service", "offline", "inactif"];
 const TERMINAL_BOOT_LOGS = [
   "> ACCESS_TERMINAL_READY",
   "> AUTHENTIFICATION REQUISE",
@@ -186,25 +188,21 @@ function setupSoundToggle() {
  * Insertion dynamique pour garder un rendu cohérent sur toutes les pages
  * sans dupliquer le même HTML.
  */
-function getUnitStatusTone(status) {
-  const normalizedStatus = status
+function normalizeTerminalText(value) {
+  return String(value)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+}
 
-  if (
-    normalizedStatus.includes("alerte") ||
-    normalizedStatus.includes("maintenance") ||
-    normalizedStatus.includes("veille")
-  ) {
+function getUnitStatusTone(status) {
+  const normalizedStatus = normalizeTerminalText(status);
+
+  if (WARNING_STATUS_KEYWORDS.some((keyword) => normalizedStatus.includes(keyword))) {
     return "warning";
   }
 
-  if (
-    normalizedStatus.includes("hors service") ||
-    normalizedStatus.includes("offline") ||
-    normalizedStatus.includes("inactif")
-  ) {
+  if (CRITICAL_STATUS_KEYWORDS.some((keyword) => normalizedStatus.includes(keyword))) {
     return "critical";
   }
 
@@ -212,10 +210,9 @@ function getUnitStatusTone(status) {
 }
 
 function setupSiteUtilities() {
-  if (document.querySelector(".site-utilities")) return;
-
-  const utilities = document.createElement("div");
+  const utilities = document.querySelector(".site-utilities") || document.createElement("div");
   utilities.className = "site-utilities";
+  utilities.replaceChildren();
 
   const statusWidget = document.createElement("div");
   statusWidget.className = "unit-status";
@@ -234,7 +231,9 @@ function setupSiteUtilities() {
   discordLink.setAttribute("aria-label", "Rejoindre le Discord BLACKBURN");
 
   utilities.append(statusWidget, discordLink);
-  document.body.appendChild(utilities);
+  if (!utilities.isConnected) {
+    document.body.appendChild(utilities);
+  }
 }
 
 /** ====== HABILLAGE TERMINAL / CRT ======

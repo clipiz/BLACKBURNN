@@ -13,6 +13,7 @@
   --radius: 14px;
   --ease: 260ms cubic-bezier(.2,.8,.2,1);
   --terminal-font: "Share Tech Mono", "Courier New", monospace;
+  --navbar-offset: 78px;
 }
 
 * {
@@ -434,7 +435,7 @@ body.locked {
  */
 .site-utilities {
   position: fixed;
-  top: 78px;
+  top: var(--navbar-offset);
   right: 16px;
   z-index: 900;
   display: flex;
@@ -566,7 +567,7 @@ body.locked {
   }
 
   .site-utilities {
-    top: 74px;
+    --navbar-offset: 74px;
     max-width: calc(100vw - 24px);
   }
 }
@@ -605,7 +606,7 @@ body.locked {
   }
 
   .site-utilities {
-    top: 72px;
+    --navbar-offset: 72px;
     left: 12px;
     right: 12px;
     justify-content: flex-start;
