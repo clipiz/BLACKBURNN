@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+
 :root {
   --bg: #0b0f0c;
   --bg2: #121814;
@@ -10,6 +12,8 @@
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   --radius: 14px;
   --ease: 260ms cubic-bezier(.2,.8,.2,1);
+  --terminal-font: "Share Tech Mono", "Courier New", monospace;
+  --navbar-offset: 78px;
 }
 
 * {
@@ -30,6 +34,43 @@ body {
     var(--bg);
   color: var(--text);
   line-height: 1.6;
+  position: relative;
+  isolation: isolate;
+}
+
+/* ====== AMBIANCE TERMINAL / CRT ======
+ * Effets légers pour renforcer l'esthétique tactique sans gêner la lecture.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.06;
+  background:
+    linear-gradient(rgba(152,255,152,0.02), rgba(152,255,152,0.02)),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,0.12) 0,
+      rgba(255,255,255,0.12) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  mix-blend-mode: screen;
+  animation: crtFlicker 7s steps(1) infinite;
+}
+
+.logo,
+.hero-content h1,
+.section h2,
+.card h3,
+.gate-box h2,
+.gate-terminal-log,
+.unit-status,
+.discord-link,
+.topbar h1 {
+  font-family: var(--terminal-font);
 }
 
 /* ====== NAVBAR ====== */
@@ -282,6 +323,40 @@ body.locked {
   display: grid;
   place-items: center;
   padding: 16px;
+  overflow: hidden;
+}
+
+.gate-overlay::before,
+.gate-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.gate-overlay::before {
+  opacity: 0.18;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(152,255,152,0.15) 0,
+    rgba(152,255,152,0.15) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+}
+
+.gate-overlay::after {
+  top: -40%;
+  bottom: auto;
+  height: 40%;
+  background: linear-gradient(
+    180deg,
+    rgba(152,255,152,0),
+    rgba(152,255,152,0.18),
+    rgba(152,255,152,0)
+  );
+  opacity: 0.55;
+  animation: scanSweep 5.6s linear infinite;
 }
 
 .gate-overlay.hidden {
@@ -296,17 +371,50 @@ body.locked {
   padding: 20px;
   text-align: center;
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.gate-box::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(152,255,152,0.12);
+  border-radius: 8px;
+  pointer-events: none;
 }
 
 .gate-box h2 {
   margin-bottom: 8px;
   color: var(--accent);
+  letter-spacing: 2px;
 }
 
 .gate-box p {
   margin-bottom: 12px;
   color: #c5d0c5;
 }
+
+.gate-terminal-log {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(152,255,152,0.16);
+  border-radius: 8px;
+  background: rgba(5, 11, 7, 0.78);
+  color: #b9ffb9;
+  text-align: left;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  letter-spacing: 0.08em;
+}
+
+.gate-terminal-line {
+  opacity: 0;
+  animation: terminalBoot 0.7s ease forwards;
+}
+
+.gate-terminal-line:nth-child(2) { animation-delay: 0.12s; }
+.gate-terminal-line:nth-child(3) { animation-delay: 0.24s; }
 
 .gate-box input {
   margin-bottom: 10px;
@@ -320,6 +428,69 @@ body.locked {
 
 .logout-btn {
   margin-left: 10px;
+}
+
+/* ====== WIDGETS GLOBAUX ======
+ * Raccourcis persistants partagés sur toutes les pages.
+ */
+.site-utilities {
+  position: fixed;
+  top: var(--navbar-offset);
+  right: 16px;
+  z-index: 900;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: min(540px, calc(100vw - 32px));
+}
+
+.unit-status,
+.discord-link {
+  border: 1px solid rgba(152,255,152,0.22);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+}
+
+.unit-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(10, 16, 12, 0.9);
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  text-shadow: 0 0 10px rgba(152,255,152,0.18);
+}
+
+.status-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(152,255,152,0.55);
+  animation: pulseLed 1.5s ease-in-out infinite;
+}
+
+.unit-status[data-status-tone="warning"] .status-led {
+  background: #ffb347;
+  box-shadow: 0 0 10px rgba(255,179,71,0.65);
+}
+
+.unit-status[data-status-tone="critical"] .status-led {
+  background: #ff7676;
+  box-shadow: 0 0 10px rgba(255,118,118,0.65);
+}
+
+.discord-link {
+  background: linear-gradient(180deg, #5865f2, #4752c4);
+  color: #fff;
+  padding-inline: 16px;
+}
+
+.discord-link:hover {
+  box-shadow: 0 10px 24px rgba(88,101,242,0.35);
 }
 
 .sound-toggle {
@@ -361,12 +532,43 @@ body.locked {
   to   { transform: rotate(360deg) scale(1.1); }
 }
 
+@keyframes crtFlicker {
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.08; }
+}
+
+@keyframes scanSweep {
+  from { transform: translateY(-160%); }
+  to { transform: translateY(360%); }
+}
+
+@keyframes pulseLed {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes terminalBoot {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* ====== RESPONSIVE ====== */
 @media (max-width: 980px) {
   .navbar { gap: 10px; }
   nav a {
     margin-left: 10px;
     font-size: 0.98rem;
+  }
+
+  .site-utilities {
+    --navbar-offset: 74px;
+    max-width: calc(100vw - 24px);
   }
 }
 
@@ -401,6 +603,18 @@ body.locked {
   .logo-img {
     width: 32px;
     height: 32px;
+  }
+
+  .site-utilities {
+    --navbar-offset: 72px;
+    left: 12px;
+    right: 12px;
+    justify-content: flex-start;
+  }
+
+  .unit-status,
+  .discord-link {
+    font-size: 0.75rem;
   }
 
   .sound-toggle {

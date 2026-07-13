@@ -1,5 +1,23 @@
 const menuBtn = document.getElementById("menuBtn");
 const nav = document.getElementById("nav");
+const gate = document.getElementById("accessGate");
+const accessInput = document.getElementById("accessCodeInput");
+const accessBtn = document.getElementById("accessCodeBtn");
+const accessError = document.getElementById("accessError");
+
+/** ====== WIDGETS GLOBAUX ======
+ * Ajustez simplement ces constantes pour faire évoluer le statut affiché
+ * et les logs esthétiques du terminal sur toutes les pages.
+ */
+const UNIT_STATUS = "OPÉRATIF";
+const DISCORD_INVITE_URL = "https://discord.gg/U8Xu5EEEsD";
+const WARNING_STATUS_KEYWORDS = ["alerte", "maintenance", "veille"];
+const CRITICAL_STATUS_KEYWORDS = ["hors service", "offline", "inactif"];
+const TERMINAL_BOOT_LOGS = [
+  "> ACCESS_TERMINAL_READY",
+  "> AUTHENTIFICATION REQUISE",
+  "> ENTREZ CODE D'ACCÈS..."
+];
 
 /** ====== SONS D'INTERACTION ======
  * Le système utilise des fichiers audio externes dans `assets/sounds/`.
@@ -166,8 +184,85 @@ function setupSoundToggle() {
   document.body.appendChild(toggleBtn);
 }
 
+/** ====== STATUS TRACKER + ACCÈS DISCORD ======
+ * Insertion dynamique pour garder un rendu cohérent sur toutes les pages
+ * sans dupliquer le même HTML.
+ */
+function normalizeTerminalText(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function getUnitStatusTone(status) {
+  const normalizedStatus = normalizeTerminalText(status);
+
+  if (WARNING_STATUS_KEYWORDS.some((keyword) => normalizedStatus.includes(keyword))) {
+    return "warning";
+  }
+
+  if (CRITICAL_STATUS_KEYWORDS.some((keyword) => normalizedStatus.includes(keyword))) {
+    return "critical";
+  }
+
+  return "operational";
+}
+
+function setupSiteUtilities() {
+  const utilities = document.querySelector(".site-utilities") || document.createElement("div");
+  utilities.className = "site-utilities";
+  utilities.replaceChildren();
+
+  const statusWidget = document.createElement("div");
+  statusWidget.className = "unit-status";
+  statusWidget.dataset.statusTone = getUnitStatusTone(UNIT_STATUS);
+  statusWidget.innerHTML = `
+    <span class="status-led" aria-hidden="true"></span>
+    <span class="status-label">STATUT DE L'UNITÉ : ${UNIT_STATUS}</span>
+  `;
+
+  const discordLink = document.createElement("a");
+  discordLink.className = "btn discord-link";
+  discordLink.href = DISCORD_INVITE_URL;
+  discordLink.target = "_blank";
+  discordLink.rel = "noopener noreferrer";
+  discordLink.textContent = "Discord";
+  discordLink.setAttribute("aria-label", "Rejoindre le Discord BLACKBURN");
+
+  utilities.append(statusWidget, discordLink);
+  if (!utilities.isConnected) {
+    document.body.appendChild(utilities);
+  }
+}
+
+/** ====== HABILLAGE TERMINAL / CRT ======
+ * Ajoute des lignes de terminal esthétiques dans l'écran d'accès
+ * sans alourdir le HTML de chaque page.
+ */
+function setupAccessGateTerminal() {
+  const gateBox = gate?.querySelector(".gate-box");
+  const gateIntro = gateBox?.querySelector("p");
+
+  if (!gateBox || !gateIntro || gateBox.querySelector(".gate-terminal-log")) return;
+
+  const terminalLog = document.createElement("div");
+  terminalLog.className = "gate-terminal-log";
+
+  TERMINAL_BOOT_LOGS.forEach((line) => {
+    const terminalLine = document.createElement("div");
+    terminalLine.className = "gate-terminal-line";
+    terminalLine.textContent = line;
+    terminalLog.appendChild(terminalLine);
+  });
+
+  gateIntro.insertAdjacentElement("afterend", terminalLog);
+}
+
+setupSiteUtilities();
 setupSoundToggle();
 setupInteractionSoundDelegation();
+setupAccessGateTerminal();
 
 if (menuBtn && nav) {
   menuBtn.addEventListener("click", () => {
@@ -182,11 +277,6 @@ if (menuBtn && nav) {
 /** ====== CODE D'ACCÈS ====== */
 const ACCESS_CODE = "0000";
 const ACCESS_STORAGE_KEY = "blackburn_access_granted";
-
-const gate = document.getElementById("accessGate");
-const accessInput = document.getElementById("accessCodeInput");
-const accessBtn = document.getElementById("accessCodeBtn");
-const accessError = document.getElementById("accessError");
 
 function unlockSite() {
   if (!gate) return;
