@@ -6,7 +6,7 @@ if (menuBtn && nav) {
     nav.classList.toggle("open");
   });
 
-  document.querySelectorAll("nav a").forEach(link => {
+  document.querySelectorAll("nav a").forEach((link) => {
     link.addEventListener("click", () => nav.classList.remove("open"));
   });
 }
@@ -71,4 +71,25 @@ if (logoutBtn) {
     }
     if (accessError) accessError.textContent = "";
   });
+}
+
+/** ====== SCROLL REVEAL PREMIUM ====== */
+const revealItems = document.querySelectorAll(".reveal-up");
+
+if ("IntersectionObserver" in window && revealItems.length) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.18 }
+  );
+
+  revealItems.forEach((el) => observer.observe(el));
+} else {
+  revealItems.forEach((el) => el.classList.add("revealed"));
 }
