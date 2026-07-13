@@ -55,8 +55,8 @@ function playSound(soundName) {
   }
 }
 
-function bindInteractionSounds(root = document) {
-  root.querySelectorAll(INTERACTIVE_SOUND_SELECTOR).forEach((element) => {
+function bindInteractionSounds() {
+  document.querySelectorAll(INTERACTIVE_SOUND_SELECTOR).forEach((element) => {
     if (element.dataset.soundBound === "true") return;
 
     element.dataset.soundBound = "true";
@@ -71,6 +71,7 @@ function setupSoundToggle() {
   toggleBtn.type = "button";
   toggleBtn.className = "btn sound-toggle";
   toggleBtn.id = "soundToggleBtn";
+  toggleBtn.dataset.soundBound = "true";
 
   function updateSoundToggleUI() {
     toggleBtn.textContent = soundEnabled ? "Sons: ON" : "Sons: OFF";
