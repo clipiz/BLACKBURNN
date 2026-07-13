@@ -55,7 +55,7 @@ function playSound(soundName) {
   if (!source) return;
 
   // Si un son est déjà en cours, on clone pour éviter les artefacts audio.
-  const playbackInstance = !source.paused ? source.cloneNode() : source;
+  const playbackInstance = !source.paused ? new Audio(source.src) : source;
   playbackInstance.volume = source.volume;
   if (playbackInstance === source) {
     source.currentTime = 0;
