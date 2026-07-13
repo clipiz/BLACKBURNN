@@ -9,30 +9,39 @@ const SOUND_STORAGE_KEY = "blackburn_sound_enabled";
 const INTERACTIVE_SOUND_SELECTOR =
   "a[href], button, input[type='button'], input[type='submit'], input[type='reset'], [role='button']";
 
-const soundLibrary = {
-  hover: new Audio("assets/sounds/hover.mp3"),
-  click: new Audio("assets/sounds/click.mp3"),
-  confirm: new Audio("assets/sounds/confirm.mp3")
+const soundDefinitions = {
+  hover: { src: "assets/sounds/hover.mp3", volume: 0.2 },
+  click: { src: "assets/sounds/click.mp3", volume: 0.35 },
+  confirm: { src: "assets/sounds/confirm.mp3", volume: 0.4 }
 };
+let soundLibrary;
 
-soundLibrary.hover.volume = 0.2;
-soundLibrary.click.volume = 0.35;
-soundLibrary.confirm.volume = 0.4;
-Object.values(soundLibrary).forEach((sound) => {
-  sound.preload = "auto";
-  sound.load();
-});
-Object.entries(soundLibrary).forEach(([name, sound]) => {
-  sound.addEventListener("error", () => {
-    console.warn(`[BLACKBURN] Fichier audio introuvable ou illisible: ${name}`);
+function getSoundLibrary() {
+  if (soundLibrary) return soundLibrary;
+
+  soundLibrary = {};
+  Object.entries(soundDefinitions).forEach(([name, config]) => {
+    const sound = new Audio(config.src);
+    sound.preload = "auto";
+    sound.volume = config.volume;
+    sound.addEventListener("error", () => {
+      console.warn(`[BLACKBURN] Fichier audio introuvable ou illisible: ${name}`);
+    });
+    soundLibrary[name] = sound;
   });
-});
+  return soundLibrary;
+}
+
+function preloadSounds() {
+  Object.values(getSoundLibrary()).forEach((sound) => sound.load());
+}
 
 let soundEnabled = localStorage.getItem(SOUND_STORAGE_KEY) !== "false";
 let userInteractedWithPage = false;
 
 function unlockSoundPlayback() {
   userInteractedWithPage = true;
+  if (soundEnabled) preloadSounds();
 }
 
 window.addEventListener("pointerdown", unlockSoundPlayback, { once: true, passive: true });
@@ -42,27 +51,42 @@ window.addEventListener("keydown", unlockSoundPlayback, { once: true });
 function playSound(soundName) {
   if (!soundEnabled || !userInteractedWithPage) return;
 
-  const source = soundLibrary[soundName];
+  const source = getSoundLibrary()[soundName];
   if (!source) return;
 
-  // cloneNode évite les coupures quand plusieurs interactions arrivent rapidement.
-  const instance = source.cloneNode();
-  instance.volume = source.volume;
-  instance.currentTime = 0;
-  const playPromise = instance.play();
+  // Rejoue le son depuis le début pour garder un rendu net à chaque interaction.
+  source.currentTime = 0;
+  const playPromise = source.play();
   if (playPromise && typeof playPromise.catch === "function") {
     playPromise.catch(() => {});
   }
 }
 
-function bindInteractionSounds() {
-  document.querySelectorAll(INTERACTIVE_SOUND_SELECTOR).forEach((element) => {
-    if (element.dataset.soundBound === "true") return;
+function getInteractiveElement(target) {
+  if (!(target instanceof Element)) return null;
+  return target.closest(INTERACTIVE_SOUND_SELECTOR);
+}
 
-    element.dataset.soundBound = "true";
-    element.addEventListener("mouseenter", () => playSound("hover"));
-    element.addEventListener("focus", () => playSound("hover"));
-    element.addEventListener("click", () => playSound("click"));
+function setupInteractionSoundDelegation() {
+  document.addEventListener("mouseover", (event) => {
+    const interactiveTarget = getInteractiveElement(event.target);
+    if (!interactiveTarget || interactiveTarget.id === "soundToggleBtn") return;
+
+    const previousTarget = getInteractiveElement(event.relatedTarget);
+    if (previousTarget === interactiveTarget) return;
+    playSound("hover");
+  });
+
+  document.addEventListener("focusin", (event) => {
+    const interactiveTarget = getInteractiveElement(event.target);
+    if (!interactiveTarget || interactiveTarget.id === "soundToggleBtn") return;
+    playSound("hover");
+  });
+
+  document.addEventListener("click", (event) => {
+    const interactiveTarget = getInteractiveElement(event.target);
+    if (!interactiveTarget || interactiveTarget.id === "soundToggleBtn") return;
+    playSound("click");
   });
 }
 
@@ -71,7 +95,6 @@ function setupSoundToggle() {
   toggleBtn.type = "button";
   toggleBtn.className = "btn sound-toggle";
   toggleBtn.id = "soundToggleBtn";
-  toggleBtn.dataset.soundBound = "true";
 
   function updateSoundToggleUI() {
     toggleBtn.textContent = soundEnabled ? "Sons: ON" : "Sons: OFF";
@@ -84,6 +107,7 @@ function setupSoundToggle() {
     updateSoundToggleUI();
 
     if (soundEnabled) {
+      preloadSounds();
       playSound("confirm");
     }
   });
@@ -93,7 +117,7 @@ function setupSoundToggle() {
 }
 
 setupSoundToggle();
-bindInteractionSounds();
+setupInteractionSoundDelegation();
 
 if (menuBtn && nav) {
   menuBtn.addEventListener("click", () => {
