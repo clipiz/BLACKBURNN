@@ -25,7 +25,7 @@ function getSoundLibrary() {
     sound.preload = "auto";
     sound.volume = config.volume;
     sound.addEventListener("error", () => {
-      console.warn(`[BLACKBURN] Fichier audio introuvable ou illisible: ${name}`);
+      console.warn(`[BLACKBURN] Fichier audio introuvable ou illisible: ${config.src}`);
     });
     soundLibrary[name] = sound;
   });
@@ -54,9 +54,14 @@ function playSound(soundName) {
   const source = getSoundLibrary()[soundName];
   if (!source) return;
 
-  // Rejoue le son depuis le début pour garder un rendu net à chaque interaction.
-  source.currentTime = 0;
-  const playPromise = source.play();
+  // Si un son est déjà en cours, on clone pour éviter les artefacts audio.
+  const playbackInstance = !source.paused ? source.cloneNode() : source;
+  playbackInstance.volume = source.volume;
+  if (playbackInstance === source) {
+    source.currentTime = 0;
+  }
+
+  const playPromise = playbackInstance.play();
   if (playPromise && typeof playPromise.catch === "function") {
     playPromise.catch(() => {});
   }
