@@ -22,6 +22,11 @@ Object.values(soundLibrary).forEach((sound) => {
   sound.preload = "auto";
   sound.load();
 });
+Object.entries(soundLibrary).forEach(([name, sound]) => {
+  sound.addEventListener("error", () => {
+    console.warn(`[BLACKBURN] Fichier audio introuvable ou illisible: ${name}`);
+  });
+});
 
 let soundEnabled = localStorage.getItem(SOUND_STORAGE_KEY) !== "false";
 let userInteractedWithPage = false;
@@ -56,6 +61,7 @@ function bindInteractionSounds(root = document) {
 
     element.dataset.soundBound = "true";
     element.addEventListener("mouseenter", () => playSound("hover"));
+    element.addEventListener("focus", () => playSound("hover"));
     element.addEventListener("click", () => playSound("click"));
   });
 }
@@ -83,7 +89,6 @@ function setupSoundToggle() {
 
   updateSoundToggleUI();
   document.body.appendChild(toggleBtn);
-  bindInteractionSounds(document);
 }
 
 setupSoundToggle();
